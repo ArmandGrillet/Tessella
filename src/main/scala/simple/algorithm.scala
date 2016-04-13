@@ -8,12 +8,11 @@ import java.awt.{Color, Paint}
 import java.io.File
 import scala.io.Source
 
+case class Tile(minX: Double, minY: Double, maxX: Double, maxY: Double)
+
 object Algorithm {
     // Parameters.
-    val k = 7 // K'th neighbor used in local scaling.
-    val minClusters = 2 // Minimal number of clusters in the dataset.
-    val maxClusters = 6 // Maximal number of clusters in the dataset.
-    val eps = 2.2204e-16
+    val maxPerTile = 1 // Maximum number of observations per tile.
 
     def main(args: Array[String]) = {
         // Choose the dataset to cluster.
@@ -21,11 +20,16 @@ object Algorithm {
         val matrixFile = new File(pathToMatrix)
 
         // Create a DenseMatrix from the CSV.
-        val originalMatrix = breeze.linalg.csvread(matrixFile)
+        val matrix = breeze.linalg.csvread(matrixFile)
+
+        val firstTile = Tile(scala.Double.NegativeInfinity, scala.Double.NegativeInfinity, scala.Double.PositiveInfinity, scala.Double.PositiveInfinity)
+        val tiles: List[Tile] = cut(matrix, firstTile, maxPerTile)
+
+        println(tiles)
 
         val f = Figure()
         val p = f.subplot(0)
-        p += scatter(originalMatrix(::, 0), originalMatrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK})
+        p += scatter(matrix(::, 0), matrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK})
 
         val x = linspace(-10.0,10.0)
         p += plot(x, sin(x), '.')
@@ -34,6 +38,6 @@ object Algorithm {
         p += plot(x, y)
 
         p.title = "Tesselation tree"
-        f.saveas("image.png")
+        // f.saveas("image.png")
     }
 }
