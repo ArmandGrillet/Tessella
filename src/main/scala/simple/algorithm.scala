@@ -25,10 +25,13 @@ object Algorithm {
 
         val f = Figure()
         val p = f.subplot(0)
-        // val m = DenseMatrix.rand(200,200)
-        // println(m)
-        // p += image(m)
         p += scatter(originalMatrix(::, 0), originalMatrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK})
+
+        val x = linspace(-10.0,10.0)
+        p += plot(x, sin(x), '.')
+        p += plot(x, cos(x))
+        val y = DenseVector.fill(x.length){5.0}
+        p += plot(x, y)
 
         p.title = "Tesselation tree"
         f.saveas("image.png")
