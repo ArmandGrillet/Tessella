@@ -12,11 +12,11 @@ case class Tile(minX: Double, minY: Double, maxX: Double, maxY: Double)
 
 object Algorithm {
     // Parameters.
-    val maxPerTile = 1 // Maximum number of observations per tile.
+    val maxPerTile = 2 // Maximum number of observations per tile.
 
     def main(args: Array[String]) = {
         // Choose the dataset to cluster.
-        val pathToMatrix = getClass.getResource("/4.csv").getPath()
+        val pathToMatrix = getClass.getResource("/noob.csv").getPath()
         val matrixFile = new File(pathToMatrix)
 
         // Create a DenseMatrix from the CSV.
@@ -25,17 +25,39 @@ object Algorithm {
         val firstTile = Tile(scala.Double.NegativeInfinity, scala.Double.NegativeInfinity, scala.Double.PositiveInfinity, scala.Double.PositiveInfinity)
         val tiles: List[Tile] = cut(matrix, firstTile, maxPerTile)
 
-        println(tiles)
-
         val f = Figure()
         val p = f.subplot(0)
-        p += scatter(matrix(::, 0), matrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK})
+        p += scatter(matrix(::, 0), matrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK}) // Display the observations.
 
-        val x = linspace(-10.0,10.0)
-        p += plot(x, sin(x), '.')
-        p += plot(x, cos(x))
-        val y = DenseVector.fill(x.length){5.0}
-        p += plot(x, y)
+        for (tile <- tiles) {
+            // TODO: this code smells.
+            var (modifiableMinX, modifiableMinY, modifiableMaxX, modifiableMaxY) = (tile.minX, tile.minY, tile.maxX, tile.maxY)
+
+            if (modifiableMinX == scala.Double.NegativeInfinity) {
+                modifiableMinX = 0
+            }
+            if (modifiableMinY == scala.Double.NegativeInfinity) {
+                modifiableMinY = 0
+            }
+            if (modifiableMaxX == scala.Double.PositiveInfinity) {
+                modifiableMaxX = 50
+            }
+            if (modifiableMaxY == scala.Double.PositiveInfinity) {
+                modifiableMaxY = 50
+            }
+
+            val x = linspace(modifiableMinX, modifiableMaxX)
+            val top = DenseVector.fill(x.length){modifiableMaxY}
+            val bottom = DenseVector.fill(x.length){modifiableMinY}
+            p += plot(x, top)
+            p += plot(x, bottom)
+
+            val y = linspace(modifiableMinY, modifiableMaxY)
+            val left = DenseVector.fill(y.length){modifiableMinX}
+            val right = DenseVector.fill(y.length){modifiableMaxX}
+            p += plot(left, y)
+            p += plot(right, y)
+        }
 
         p.title = "Tesselation tree"
         // f.saveas("image.png")
