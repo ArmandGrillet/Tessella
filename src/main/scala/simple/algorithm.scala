@@ -27,23 +27,28 @@ object Algorithm {
 
         val f = Figure()
         val p = f.subplot(0)
+        val minCols = min(matrix(::, *))
+        val maxCols = max(matrix(::, *))
+        p.xlim(minCols(0) - 2, maxCols(0) + 2)
+        p.ylim(minCols(1) - 2, maxCols(1) + 2)
+
         p += scatter(matrix(::, 0), matrix(::, 1), {(_:Int) => 0.3}, {(_:Int) => Color.BLACK}) // Display the observations.
 
+
         for (tile <- tiles) {
-            // TODO: this code smells.
             var (modifiableMinX, modifiableMinY, modifiableMaxX, modifiableMaxY) = (tile.minX, tile.minY, tile.maxX, tile.maxY)
 
             if (modifiableMinX == scala.Double.NegativeInfinity) {
-                modifiableMinX = 0
+                modifiableMinX = minCols(0) - 2
             }
             if (modifiableMinY == scala.Double.NegativeInfinity) {
-                modifiableMinY = 0
+                modifiableMinY = minCols(1) - 2
             }
             if (modifiableMaxX == scala.Double.PositiveInfinity) {
-                modifiableMaxX = 50
+                modifiableMaxX = maxCols(0) + 2
             }
             if (modifiableMaxY == scala.Double.PositiveInfinity) {
-                modifiableMaxY = 50
+                modifiableMaxY = maxCols(1) + 2
             }
 
             val x = linspace(modifiableMinX, modifiableMaxX)

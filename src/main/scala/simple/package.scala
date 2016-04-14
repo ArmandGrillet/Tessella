@@ -14,16 +14,6 @@ package object simple {
         return observations
     }
 
-    def tilesWithTooManyObservations(matrix: DenseMatrix[Double], tiles: List[Tile], maxPerTile: Int): List[Int] = {
-        val tooBigTiles: List[Int] = List()
-        for(i <- 0 to tiles.length){
-            if (numberOfObservationsInTile(matrix, tiles(i)) > maxPerTile) {
-                // tooBigTiles :: i
-            }
-        }
-        return tooBigTiles
-    }
-
     def minMeanMax(matrix: DenseMatrix[Double], tile: Tile): (DenseVector[Double], DenseVector[Double], DenseVector[Double]) = {
         var min = DenseVector.fill(2){scala.Double.PositiveInfinity}
         var mean = DenseVector.zeros[Double](2)
